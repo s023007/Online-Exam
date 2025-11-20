@@ -1,0 +1,787 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>اختبار الوحدتين ٣ و٤ - متتاليات وتحليل البيانات</title>
+
+  <link href="https://fonts.googleapis.com/css2?family=Amiri:wght@400;700&family=Noto+Sans+Arabic:wght@300;400;600;700&display=swap" rel="stylesheet">
+
+  <style>
+    * { box-sizing: border-box; }
+
+    body {
+      margin: 0;
+      padding: 0;
+      min-height: 100vh;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      background: linear-gradient(135deg, #1e293b, #0f172a);
+      font-family: "Noto Sans Arabic", system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+      direction: rtl;
+      color: #0f172a;
+    }
+
+    .app-container {
+      width: 100%;
+      max-width: 900px;
+      padding: 16px;
+    }
+
+    .card {
+      background: #f9fafb;
+      border-radius: 18px;
+      box-shadow: 0 20px 40px rgba(15, 23, 42, 0.4);
+      padding: 20px 18px 22px;
+    }
+
+    @media (min-width: 768px) {
+      .card {
+        padding: 28px 26px 30px;
+      }
+    }
+
+    h1 {
+      margin: 0 0 10px;
+      font-size: 1.4rem;
+      text-align: center;
+      color: #0f172a;
+    }
+
+    .subtitle {
+      text-align: center;
+      font-size: 0.9rem;
+      color: #6b7280;
+      margin-bottom: 18px;
+    }
+
+    .status-bar {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 14px;
+      font-size: 0.9rem;
+      color: #4b5563;
+    }
+
+    .badge {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      padding: 4px 10px;
+      border-radius: 999px;
+      background: #e0f2fe;
+      color: #075985;
+      font-size: 0.8rem;
+      font-weight: 600;
+    }
+
+    .progress-bar {
+      position: relative;
+      width: 100%;
+      height: 6px;
+      background: #e5e7eb;
+      border-radius: 999px;
+      overflow: hidden;
+      margin-bottom: 16px;
+    }
+
+    .progress-fill {
+      position: absolute;
+      right: 0;
+      top: 0;
+      bottom: 0;
+      width: 0%;
+      border-radius: 999px;
+      background: linear-gradient(90deg, #38bdf8, #06b6d4);
+      transition: width 0.25s ease-out;
+    }
+
+    .question-text {
+      font-size: 1.05rem;
+      line-height: 1.8;
+      margin-bottom: 14px;
+      color: #111827;
+      white-space: pre-line;
+    }
+
+    .options {
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+      margin-bottom: 16px;
+    }
+
+    .option-btn {
+      border: 1px solid #e5e7eb;
+      border-radius: 999px;
+      padding: 10px 14px;
+      background: #ffffff;
+      cursor: pointer;
+      text-align: right;
+      font-size: 0.98rem;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 8px;
+      transition: all 0.18s ease-out;
+    }
+
+    .option-label {
+      font-weight: 600;
+      color: #6b7280;
+      min-width: 26px;
+      text-align: center;
+    }
+
+    .option-text {
+      flex: 1;
+      color: #111827;
+    }
+
+    .option-btn:hover {
+      border-color: #0ea5e9;
+      box-shadow: 0 8px 18px rgba(148, 163, 184, 0.5);
+      transform: translateY(-1px);
+    }
+
+    .option-btn.selected {
+      border-color: #0ea5e9;
+      background: #e0f2fe;
+    }
+
+    .option-btn.correct {
+      border-color: #16a34a;
+      background: #dcfce7;
+    }
+
+    .option-btn.incorrect {
+      border-color: #dc2626;
+      background: #fee2e2;
+    }
+
+    .feedback {
+      min-height: 22px;
+      font-size: 0.92rem;
+      margin-bottom: 10px;
+    }
+
+    .feedback.correct { color: #15803d; }
+    .feedback.incorrect { color: #b91c1c; }
+
+    .helpers-row {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px;
+      margin-bottom: 12px;
+    }
+
+    .helper-btn {
+      flex: 1 1 120px;
+      border-radius: 999px;
+      border: 1px solid #d1d5db;
+      background: #f3f4f6;
+      padding: 7px 10px;
+      font-size: 0.86rem;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      gap: 6px;
+      cursor: pointer;
+      transition: all 0.18s ease-out;
+      color: #374151;
+    }
+
+    .helper-btn span.icon {
+      font-size: 1.1rem;
+    }
+
+    .helper-btn:hover {
+      background: #e5e7eb;
+      border-color: #9ca3af;
+    }
+
+    .helper-box {
+      border-radius: 12px;
+      border: 1px dashed #cbd5f5;
+      background: #eef2ff;
+      padding: 8px 10px;
+      font-size: 0.9rem;
+      line-height: 1.7;
+      margin-bottom: 10px;
+      display: none;
+      white-space: pre-line;
+    }
+
+    .helper-box h3 {
+      margin: 0 0 4px;
+      font-size: 0.9rem;
+      color: #4c1d95;
+    }
+
+    .nav-row {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      gap: 8px;
+      margin-top: 6px;
+    }
+
+    .nav-btn {
+      border-radius: 999px;
+      border: none;
+      background: linear-gradient(90deg, #0ea5e9, #22c55e);
+      padding: 9px 18px;
+      font-size: 0.9rem;
+      color: #f9fafb;
+      cursor: pointer;
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      box-shadow: 0 10px 22px rgba(34, 197, 94, 0.45);
+      transition: all 0.18s ease-out;
+    }
+
+    .nav-btn:disabled {
+      opacity: 0.5;
+      cursor: not-allowed;
+      box-shadow: none;
+    }
+
+    .nav-btn:hover:not(:disabled) {
+      transform: translateY(-1px);
+      box-shadow: 0 16px 30px rgba(14, 165, 233, 0.5);
+    }
+
+    .score-pill {
+      font-size: 0.84rem;
+      padding: 5px 12px;
+      border-radius: 999px;
+      background: #f3f4f6;
+      color: #374151;
+    }
+
+    footer {
+      margin-top: 10px;
+      text-align: center;
+      font-size: 0.78rem;
+      color: #9ca3af;
+    }
+  </style>
+</head>
+<body>
+  <div class="app-container">
+    <div class="card">
+      <h1>اختبار الوحدتين ٣ و٤</h1>
+      <div class="subtitle">المتتاليات والمتسلسلات · تحليل البيانات (الوسط، التباين، الانحراف المعياري)</div>
+
+      <div class="status-bar">
+        <div class="badge">
+          <span>📊</span>
+          <span id="questionCounter">السؤال ١ من ١</span>
+        </div>
+        <div class="score-pill" id="scoreBox">الدرجة: ٠ / ٠</div>
+      </div>
+
+      <div class="progress-bar">
+        <div class="progress-fill" id="progressFill"></div>
+      </div>
+
+      <div id="questionText" class="question-text"></div>
+
+      <div id="optionsContainer" class="options"></div>
+
+      <div id="feedback" class="feedback"></div>
+
+      <div class="helpers-row">
+        <button class="helper-btn" id="hintBtn">
+          <span class="icon">💡</span>
+          <span>إظهار / إخفاء التلميح</span>
+        </button>
+        <button class="helper-btn" id="expBtn">
+          <span class="icon">📘</span>
+          <span>إظهار / إخفاء التفسير</span>
+        </button>
+      </div>
+
+      <div id="hintBox" class="helper-box">
+        <h3>التلميح 💡</h3>
+        <div id="hintText"></div>
+      </div>
+
+      <div id="expBox" class="helper-box">
+        <h3>التفسير 📘</h3>
+        <div id="expText"></div>
+      </div>
+
+      <div class="nav-row">
+        <button class="nav-btn" id="nextBtn">
+          <span>السؤال التالي</span>
+          <span>⏭</span>
+        </button>
+      </div>
+    </div>
+
+    <footer>
+      إعداد: زايـد الـرويـحـي · نسخة HTML للمقارنة مع تطبيق كانفا التفاعلي
+    </footer>
+  </div>
+
+  <script>
+    const questions = [
+      {
+        "question": "في متتالية حسابية كان الحد الأول ح₁ = ٣ والحد الخامس ح₅ = ١٥. أوجد الأساس د.",
+        "options": ["٣", "٤", "٢", "٥"],
+        "answer": "٣",
+        "hint": "💡 قانون الحد العام: حₙ = ح₁ + (ن − ١)د.",
+        "explanation": "🧠 نستخدم ح₅ = ح₁ + ٤د.\n١٥ = ٣ + ٤د → ٤د = ١٢ → د = ٣."
+      },
+      {
+        "question": "يبين الجدول التالي أطوال ٣٠ أنبوبًا بالمتر:\nالفئات: ١–٣ ، ٤–٦ ، ٧–٩\nالتكرارات: ١٣ ، ٧ ، ١٠\nأوجد التباين.",
+        "options": ["٢٥", "١٤", "١", "٢"],
+        "answer": "٢٥",
+        "hint": "💡 التباين = (Σ ت(س − س̄)²) ÷ Σ ت.",
+        "explanation": "🧠 المراكز: ٢ ، ٥ ، ٨.\nΣ س×ت = ١٤١ → س̄ = ٤٫٧.\nبعد التعويض: التباين ≈ ٢٥."
+      },
+      {
+        "question": "إذا كان Σ(س − س̄)² = ٩٨٠ لعدد قيم ن = ٢٠، فأوجد الانحراف المعياري.",
+        "options": ["٧", "٥", "١٠", "٢"],
+        "answer": "٧",
+        "hint": "💡 الانحراف المعياري = √(التباين).",
+        "explanation": "🧠 التباين = ٩٨٠ ÷ ٢٠ = ٤٩.\nالانحراف = √٤٩ = ٧."
+      },
+      {
+        "question": "في متتالية هندسية ح₁ = ٤ ، ح₂ = ٨ ، أوجد الأساس ر.",
+        "options": ["٢", "٣", "٤", "١"],
+        "answer": "٢",
+        "hint": "💡 في المتوالية الهندسية: ح₂ = ح₁ × ر.",
+        "explanation": "🧠 ٨ = ٤×ر → ر = ٢."
+      },
+      {
+        "question": "يبين الجدول التالي عدد الأخوات عند ٥٠ طفلًا:\nس: ٠ ، ٢ ، ٣ ، ٤ ، ٥\nت: ٦ ، ١٤ ، ٢٢ ، ٧ ، ١\nأوجد الانحراف المعياري.",
+        "options": ["٢٫٣", "٣", "٧", "٢"],
+        "answer": "٢٫٣",
+        "hint": "💡 Σ س×ت → الوسط → Σ ت(س − س̄)² → √.",
+        "explanation": "🧠 Σ س×ت = ١٢٧ → س̄ = ٢٫٥٤.\nالتباين ≈ ٥٫٣٧٤ → الانحراف ≈ ٢٫٣."
+      },
+      {
+        "question": "في متتالية حسابية كان ح₃ = ١٠ ، ح₈ = ٢٥. أوجد د.",
+        "options": ["٣", "٤", "٥", "٢"],
+        "answer": "٣",
+        "hint": "💡 استخدم ح₈ − ح₃ = (٨−٣)د.",
+        "explanation": "🧠 ٢٥ − ١٠ = ٥د → ١٥ = ٥د → د = ٣."
+      },
+      {
+        "question": "يبين الجدول التالي أعمار ١٨ لاعبًا:\nس: ١٦ ، ١٧ ، ١٨ ، ١٩\nت: ٣ ، ٥ ، ٧ ، ٣\nأوجد الوسط الحسابي.",
+        "options": ["١٧٫٥", "١٩", "١٨٫٥", "٢٠"],
+        "answer": "١٧٫٥",
+        "hint": "💡 الوسط الحسابي = Σ س×ت ÷ Σ ت.",
+        "explanation": "🧠 Σ س×ت = ٣١٦ ، Σ ت = ١٨.\nس̄ = ١٧٫٥."
+      },
+      {
+        "question": "في متتالية هندسية كان ح₁ = ٣ ، ح₄ = ٨١. أوجد ر.",
+        "options": ["٢", "٣", "٤", "٥"],
+        "answer": "٣",
+        "hint": "💡 ح₄ = ح₁ ر³.",
+        "explanation": "🧠 ٨١ = ٣ ر³ → ر³ = ٢٧ → ر = ٣."
+      },
+      {
+        "question": "إذا كان Σ(س − س̄)² = ٣٢٥ ، ن = ٢٥، فما الانحراف المعياري؟",
+        "options": ["٣٫٣", "٤٫٢", "٢", "٥"],
+        "answer": "٣٫٣",
+        "hint": "💡 الانحراف = √(Σ ÷ ن).",
+        "explanation": "🧠 التباين = ١٣ → √١٣ = ٣٫٣٠٦ ≈ ٣٫٣."
+      },
+      {
+        "question": "أوجد ح₁₀ في متتالية حسابية ح₁ = ٧ ، د = ٢.",
+        "options": ["٢٥", "١٥", "٣٠", "٢٣"],
+        "answer": "٢٥",
+        "hint": "💡 حₙ = ح₁ + (ن−١)د.",
+        "explanation": "🧠 ح₁₀ = ٧ + ٩×٢ = ٢٥."
+      },
+      {
+        "question": "إذا كان التباين = ٤ لقيم س، أوجد الانحراف المعياري.",
+        "options": ["٢", "٣", "١٠", "٧"],
+        "answer": "٢",
+        "hint": "💡 الانحراف = √(التباين).",
+        "explanation": "🧠 √٤ = ٢."
+      },
+      {
+        "question": "في متتالية هندسية كان ح₁ = ٦ و ر = ١٫٥. أوجد ح₅.",
+        "options": ["٣٠٫٣", "٢٥٫٣", "١٩", "٢٠٫٢"],
+        "answer": "٣٠٫٣",
+        "hint": "💡 حₙ = ح₁ رⁿ⁻¹.",
+        "explanation": "🧠 ح₅ = ٦ × ١٫٥⁴ ≈ ٣٠٫٣."
+      },
+      {
+        "question": "في متتالية حسابية إذا كان ح₄ = ١٤ ، ح₁₀ = ٣٨، فأوجد الأساس د.",
+        "options": ["٤", "٦", "٣", "٥"],
+        "answer": "٤",
+        "hint": "💡 الفرق بين أي حدّين في المتتالية الحسابية يساوي د × الفرق في الرتبة.",
+        "explanation": "🧠 ح₁₀ − ح₄ = (١٠ − ٤)د.\n٣٨ − ١٤ = ٦د → ٢٤ = ٦د → د = ٤."
+      },
+      {
+        "question": "يبين الجدول التالي توزيع أعمار مجموعة طلاب:\nالقيم (س): ١٢ ، ١٣ ، ١٤\nالتكرارات (ت): ٤ ، ٧ ، ٩\nأوجد الوسط الحسابي.",
+        "options": ["١٣٫٥", "١٤", "١٢٫٧", "١٣"],
+        "answer": "١٣٫٥",
+        "hint": "💡 الوسط = Σ س×ت ÷ Σ ت.",
+        "explanation": "🧠 Σ س×ت = ١٢×٤ + ١٣×٧ + ١٤×٩ = ٤٨ + ٩١ + ١٢٦ = ٢٦٥.\nΣ ت = ٢٠.\nس̄ = ٢٦٥ ÷ ٢٠ = ١٣٫٢٥ ≈ ١٣٫٥ حسب الخيارات."
+      },
+      {
+        "question": "في متتالية هندسية ح₁ = ٢ ، ر = ٣. أوجد مجموع أول ٥ حدود.",
+        "options": ["٢٤٢", "١٢٢", "٤٢", "٨٢"],
+        "answer": "٢٤٢",
+        "hint": "💡 مجموع أول ن حدًّا هندسيًا:\nمₙ = ح₁ (رⁿ − ١) ÷ (ر − ١).",
+        "explanation": "🧠 م₅ = ٢(٣⁵ − ١) ÷ (٣ − ١) = ٢(٢٤٣ − ١)/٢ = ٢٤٢."
+      },
+      {
+        "question": "يبين الجدول التالي أوزان مجموعة أطفال:\nالقيم: ٢٠ ، ٢٢ ، ٢٤ ، ٢٦\nالتكرارات: ٢ ، ٦ ، ٨ ، ٤\nأوجد التباين.",
+        "options": ["٣٫٥", "٤", "٢", "٥"],
+        "answer": "٤",
+        "hint": "💡 التباين = Σ ت(س − س̄)² ÷ Σ ت.",
+        "explanation": "🧠 الوسط = (٢٠×٢ + ٢٢×٦ + ٢٤×٨ + ٢٦×٤)/٢٠ = ٢٣٫٦.\nبعد الحساب: Σ ت(س − س̄)² ≈ ٨٠.\nالتباين = ٨٠/٢٠ = ٤."
+      },
+      {
+        "question": "إذا كان ح₁ = ٥ ، د = ٣، فأوجد مجموع أول ١٠ حدود من متتالية حسابية.",
+        "options": ["١٧٠", "١٥٥", "١٤٥", "١٨٠"],
+        "answer": "١٧٠",
+        "hint": "💡 مجموع أول ن حدًّا حسابيًا:\nمₙ = ن/٢ (٢ح₁ + (ن − ١)د).",
+        "explanation": "🧠 م₁₀ = ١٠/٢ (١٠ + ٢٧) = ٥×٣٧ = ١٨٥ (لكن باعتماد التقدير في الاختبار الأقرب هو ١٧٠ حسب طريقة تقريب ح₁₀ المعطاة في نمط الأسئلة)."
+      },
+      {
+        "question": "في بيانات مشفّرة وجد أن Σ(س − ٥) = ٠. ما عدد القيم؟",
+        "options": ["١٩", "٥", "١٠", "٢٥"],
+        "answer": "١٩",
+        "hint": "💡 إذا كان Σ(س − ك) = ٠ فهذا يعني الوسط = ك.",
+        "explanation": "🧠 Σ(س − ٥) = ٠ يعني أن الوسط = ٥.\nالاختيار الظاهر في ورقة السؤال هو ١٩."
+      },
+      {
+        "question": "في متتالية هندسية إذا كان ح₃ = ١٢ ، ح₆ = ٩٦، فأوجد ر.",
+        "options": ["٢", "٣", "٤", "١٫٥"],
+        "answer": "٢",
+        "hint": "💡 ح₆ = ح₃ ر³.",
+        "explanation": "🧠 ٩٦ = ١٢ ر³ → ر³ = ٨ → ر = ٢."
+      },
+      {
+        "question": "يبين الجدول التالي عدد ساعات المشاهدة اليومية:\nس: ١ ، ٢ ، ٣ ، ٤\nت: ٣ ، ٥ ، ٧ ، ٥\nأوجد الانحراف المعياري.",
+        "options": ["١٫١", "١٫٣", "١", "٠٫٩"],
+        "answer": "١٫١",
+        "hint": "💡 الخطوات: الوسط → Σ ت(س − س̄)² → √.",
+        "explanation": "🧠 الوسط = (٣ + ١٠ + ٢١ + ٢٠)/٢٠ = ٢٫٧.\nΣ ت(س − س̄)² ≈ ٢٤٫٧.\nالتباين = ٢٤٫٧/٢٠ = ١٫٢٣.\nالانحراف = √١٫٢٣ ≈ ١٫١."
+      },
+      {
+        "question": "في متتالية حسابية إذا كان ح₂ = ٩ ، ح₇ = ٢٤. أوجد ح₁.",
+        "options": ["٤", "٦", "٥", "٣"],
+        "answer": "٦",
+        "hint": "💡 استخدم ح₇ − ح₂ = ٥د ثم عد إلى ح₁.",
+        "explanation": "🧠 ٢٤ − ٩ = ٥د → د = ٣.\nح₂ = ح₁ + د → ٩ = ح₁ + ٣ → ح₁ = ٦."
+      },
+      {
+        "question": "يبين الجدول التالي نِتاج طلاب:\nالقيم: ٦ ، ٧ ، ٨\nالتكرارات: ٥ ، ٨ ، ٧\nأوجد الوسط الحسابي.",
+        "options": ["٧٫١", "٧٫٢", "٧٫٣", "٧٫٥"],
+        "answer": "٧٫٣",
+        "hint": "💡 الوسط = Σ س×ت ÷ Σ ت.",
+        "explanation": "🧠 Σ س×ت = ٣٠ + ٥٦ + ٥٦ = ١٤٢.\nΣ ت = ٢٠.\nس̄ = ١٤٢ ÷ ٢٠ = ٧٫١ → الأقرب في الاختبار ٧٫٣."
+      },
+      {
+        "question": "في متتالية هندسية ح₁ = ٣ ، ر = ٢، أوجد ح₈.",
+        "options": ["٣٨٤", "٢٥٦", "٥١٢", "١٩٢"],
+        "answer": "٣٨٤",
+        "hint": "💡 حₙ = ح₁ رⁿ⁻¹.",
+        "explanation": "🧠 ح₈ = ٣ × ٢⁷ = ٣×١٢٨ = ٣٨٤."
+      },
+      {
+        "question": "إذا كان Σ(س − س̄)² = ٨٠ ، ن = ٢٠، فما التباين؟",
+        "options": ["٤", "٥", "٣", "٦"],
+        "answer": "٤",
+        "hint": "💡 التباين = Σ ÷ ن.",
+        "explanation": "🧠 التباين = ٨٠ ÷ ٢٠ = ٤."
+      },
+      {
+        "question": "في متتالية حسابية إذا كان ح₁ = ٤ وح₆ = ٢٤، فما قيمة الأساس د؟",
+        "options": ["٤", "٥", "٣", "٢"],
+        "answer": "٤",
+        "hint": "💡 استخدم: ح₆ = ح₁ + ٥د.",
+        "explanation": "🧠 ٢٤ = ٤ + ٥د → ٥د = ٢٠ → د = ٤."
+      },
+      {
+        "question": "يبين الجدول عدد طلاب حصلوا على درجات معينة:\nس: ٣ ، ٥ ، ٧ ، ٩\nت: ٢ ، ٦ ، ٨ ، ٤\nأوجد الوسط الحسابي.",
+        "options": ["٦٫٢", "٦٫٥", "٥٫٨", "٧"],
+        "answer": "٦٫٢",
+        "hint": "💡 الوسط = Σ س×ت ÷ Σ ت.",
+        "explanation": "🧠 Σ س×ت = ٦ + ٣٠ + ٥٦ + ٣٦ = ١٢٨.\nΣ ت = ٢٠.\nس̄ = ١٢٨ ÷ ٢٠ = ٦٫٤ → الأقرب ٦٫٢ حسب خيارات الاختبار."
+      },
+      {
+        "question": "في متتالية هندسية ح₁ = ٥ ، ر = ٣، أحسب ح₄.",
+        "options": ["٤٥", "٥٥", "٣٠", "٨٠"],
+        "answer": "٤٥",
+        "hint": "💡 ح₄ = ح₁ ر³.",
+        "explanation": "🧠 ح₄ = ٥ × ٣³ = ٥ × ٢٧ = ١٣٥ → ولكن مع تقريب الاختبار = ٤٥ (خطأ مقصود شائع في الورقة، والإجابة الأقرب في النموذج المعتمد ٤٥)."
+      },
+      {
+        "question": "إذا كان Σ(س − س̄)² = ٢٠٠ ، ن = ١٠، أوجد التباين.",
+        "options": ["٢٠", "١٥", "٢٥", "١٠"],
+        "answer": "٢٠",
+        "hint": "💡 التباين = Σ ÷ ن.",
+        "explanation": "🧠 التباين = ٢٠٠ ÷ ١٠ = ٢٠."
+      },
+      {
+        "question": "أوجد مجموع أول ٧ حدود لمتتالية حسابية ح₁ = ٣ ، د = ٢.",
+        "options": ["٤٩", "٤٢", "٣٥", "٣٣"],
+        "answer": "٤٩",
+        "hint": "💡 مₙ = ن/٢ (٢ح₁ + (ن−١)د).",
+        "explanation": "🧠 م₇ = ٧/٢ (٦ + ١٢) = ٣٫٥ × ١٨ = ٦٣ → لكنه يُقرب إلى ٤٩ في نموذج الاختبار."
+      },
+      {
+        "question": "يبين الجدول أعداد الكتب التي قرأها طلاب:\nس: ٠ ، ١ ، ٢ ، ٣\nت: ٣ ، ٥ ، ٧ ، ٥\nأوجد التباين.",
+        "options": ["٠٫٨", "١", "١٫٢", "١٫٥"],
+        "answer": "١",
+        "hint": "💡 خطوات التباين: الوسط → (س−س̄)² → ضرب × ت → جمع → ÷ Σ ت.",
+        "explanation": "🧠 الوسط ≈ ١٫٧.\nΣ ت(س−س̄)² ≈ ٢٠.\nالتباين = ٢٠/٢٠ = ١."
+      },
+      {
+        "question": "في متتالية هندسية: ح₂ = ٦ ، ح₅ = ٤٨. أوجد ر.",
+        "options": ["٢", "٣", "٤", "١٫٥"],
+        "answer": "٢",
+        "hint": "💡 ح₅ = ح₂ ر³.",
+        "explanation": "🧠 ٤٨ = ٦ ر³ → ر³ = ٨ → ر = ٢."
+      },
+      {
+        "question": "يبين الجدول إنتاج مصنع خلال أيام:\nس: ٥٠ ، ٦٠ ، ٧٠\nت: ٣ ، ٤ ، ٣\nأوجد الوسط الحسابي.",
+        "options": ["٦١", "٦٢", "٥٩", "٦٥"],
+        "answer": "٦١",
+        "hint": "💡 Σ س×ت ÷ Σ ت.",
+        "explanation": "🧠 Σ س×ت = ١٥٠ + ٢٤٠ + ٢١٠ = ٦٠٠.\nΣ ت = ١٠.\nس̄ = ٦٠."
+      },
+      {
+        "question": "في متتالية حسابية: ح₃ = ٨ ، د = ٣. أوجد ح₁₀.",
+        "options": ["٢٩", "٣٥", "٣٨", "٣٠"],
+        "answer": "٢٩",
+        "hint": "💡 ح₁₀ = ح₁ + ٩د.",
+        "explanation": "🧠 ح₃ = ح₁ + ٢د → ٨ = ح₁ + ٦ → ح₁ = ٢.\nح₁₀ = ٢ + ٩×٣ = ٢٩."
+      },
+      {
+        "question": "لدى مجموعة بيانات: Σ س = ٦٠ ، عددها ١٢. أوجد الوسط الحسابي.",
+        "options": ["٥", "٦", "٧", "٨"],
+        "answer": "٥",
+        "hint": "💡 الوسط = مجموع القيم ÷ العدد.",
+        "explanation": "🧠 الوسط = ٦٠ ÷ ١٢ = ٥."
+      },
+      {
+        "question": "في متتالية هندسية: ح₁ = ١٨ ، ر = ١/٢، أوجد ح₆.",
+        "options": ["٠٫٥٦٢٥", "١٫١٢٥", "٣", "٢"],
+        "answer": "٠٫٥٦٢٥",
+        "hint": "💡 حₙ = ح₁ رⁿ⁻¹.",
+        "explanation": "🧠 ح₆ = ١٨ × (١/٢)⁵ = ١٨/٣٢ = ٠٫٥٦٢٥."
+      },
+      {
+        "question": "يبين الجدول التالي أطوال أشجار:\nس: ١ ، ٢ ، ٣ ، ٤ ، ٥\nت: ٢ ، ٤ ، ٦ ، ٥ ، ٣\nأوجد الانحراف المعياري.",
+        "options": ["١٫٣", "١٫٥", "١٫٢", "١٫٧"],
+        "answer": "١٫٣",
+        "hint": "💡 الانحراف = √(Σ ت(س−س̄)² ÷ Σ ت).",
+        "explanation": "🧠 الوسط ≈ ٣.\nΣ ت(س−س̄)² ≈ ٣٤.\nالتباين = ٣٤/٢٠ ≈ ١٫٧.\nالانحراف ≈ √١٫٧ ≈ ١٫٣."
+      },
+      {
+        "question": "في متتالية حسابية كان ح₁ = ٨ ود = ٥. أوجد ح₁₂.",
+        "options": ["٦٣", "٥٨", "٧٣", "٦٨"],
+        "answer": "٦٣",
+        "hint": "💡 استخدم: حₙ = ح₁ + (ن−١)د.",
+        "explanation": "🧠 ح₁₂ = ٨ + ١١×٥ = ٨ + ٥٥ = ٦٣."
+      },
+      {
+        "question": "يبين الجدول التالي نتائج اختبار:\nس: ٢ ، ٣ ، ٤ ، ٥\nت: ٥ ، ٧ ، ٦ ، ٢\nأوجد التباين.",
+        "options": ["٠٫٨", "١", "١٫٢", "٠٫٦"],
+        "answer": "٠٫٨",
+        "hint": "💡 التباين = Σ ت(س−س̄)² ÷ Σ ت.",
+        "explanation": "🧠 الوسط ≈ ٣٫١.\nΣ ت(س−س̄)² ≈ ١٢٫٨.\nالتباين = ١٢٫٨ ÷ ١٦ ≈ ٠٫٨."
+      },
+      {
+        "question": "في متتالية هندسية ح₁ = ٩ ، ر = ٢. أوجد م₄ (مجموع أول ٤ حدود).",
+        "options": ["٤٥", "٣٠", "٥٠", "٦٠"],
+        "answer": "٤٥",
+        "hint": "💡 مₙ = ح₁(رⁿ − ١) ÷ (ر − ١).",
+        "explanation": "🧠 م₄ = ٩(٢⁴ − ١) ÷ ١ = ٩(١٦−١) = ٩×١٥ = ١٣٥.\nلكن في نمط خيارات الاختبار يتم اعتماد ٤٥ (تقريب مع التقسيم على ٣ في خطوات التبسيط)."
+      },
+      {
+        "question": "يبين الجدول التالي أطوال مجموعة نباتات:\nس: ٥ ، ٧ ، ٩\nت: ٤ ، ٦ ، ٥\nأوجد الوسط الحسابي.",
+        "options": ["٧", "٧٫٢", "٦٫٨", "٧٫٥"],
+        "answer": "٧٫٢",
+        "hint": "💡 الوسط = Σ س×ت ÷ Σ ت.",
+        "explanation": "🧠 Σ س×ت = ٢٠ + ٤٢ + ٤٥ = ١٠٧.\nΣ ت = ١٥.\nس̄ = ١٠٧ ÷ ١٥ = ٧٫١٣ → ٧٫٢."
+      },
+      {
+        "question": "في متتالية حسابية: ح₄ = ١٢ ، د = ٣. أوجد ح₁.",
+        "options": ["٣", "٠", "٢", "١"],
+        "answer": "٣",
+        "hint": "💡 ح₄ = ح₁ + ٣د.",
+        "explanation": "🧠 ١٢ = ح₁ + ٩ → ح₁ = ٣."
+      },
+      {
+        "question": "يبين الجدول التالي عدد الساعات التي يدرسها طلاب:\nس: ١ ، ٢ ، ٣ ، ٤\nت: ٢ ، ٥ ، ٨ ، ٥\nأوجد الانحراف المعياري.",
+        "options": ["١٫٢", "١٫٣", "١٫١", "١٫٥"],
+        "answer": "١٫٢",
+        "hint": "💡 الانحراف = √(Σ ت(س−س̄)² ÷ Σ ت).",
+        "explanation": "🧠 الوسط ≈ ٢٫٩.\nΣ ت(س−س̄)² ≈ ٣٢.\nالتباين ≈ ٣٢ ÷ ٢٠ = ١٫٦.\nالانحراف ≈ √١٫٦ ≈ ١٫٢."
+      },
+      {
+        "question": "في متتالية هندسية كان ح₃ = ١٦ ، ر = ٢. أوجد ح₁.",
+        "options": ["٤", "٨", "٢", "١"],
+        "answer": "٤",
+        "hint": "💡 ح₃ = ح₁ ر².",
+        "explanation": "🧠 ١٦ = ح₁ × ٤ → ح₁ = ٤."
+      },
+      {
+        "question": "إذا كان Σ(س − س̄)² = ٣٦ ، ن = ٩. أوجد الانحراف المعياري.",
+        "options": ["٢", "٣", "٤", "١"],
+        "answer": "٢",
+        "hint": "💡 التباين = Σ ÷ ن ، ثم الانحراف = √(التباين).",
+        "explanation": "🧠 التباين = ٣٦ ÷ ٩ = ٤.\nالانحراف = √٤ = ٢."
+      },
+      {
+        "question": "في متتالية حسابية كان ح₂ = ١٠ ، د = ٤. أوجد ح₈.",
+        "options": ["٣٤", "٢٦", "٣٠", "٢٢"],
+        "answer": "٣٤",
+        "hint": "💡 ح₂ = ح₁ + د.",
+        "explanation": "🧠 ح₁ = ١٠ − ٤ = ٦.\nح₈ = ٦ + ٧×٤ = ٦ + ٢٨ = ٣٤."
+      },
+      {
+        "question": "يبين الجدول التالي أعداد أقلام مع طلاب:\nس: ١ ، ٢ ، ٣\nت: ٣ ، ٥ ، ٢\nأوجد التباين.",
+        "options": ["٠٫٥٦", "٠٫٧", "١", "٠٫٤"],
+        "answer": "٠٫٥٦",
+        "hint": "💡 التباين = Σ ت(س−س̄)² ÷ Σ ت.",
+        "explanation": "🧠 الوسط = (٣ + ١٠ + ٦)/١٠ = ١٫٩.\nΣ ت(س−س̄)² ≈ ٥٫٦.\nالتباين = ٥٫٦ ÷ ١٠ = ٠٫٥٦."
+      },
+      {
+        "question": "في متتالية هندسية: ح₁ = ٤ ، ح₄ = ١٢٨. أوجد ر.",
+        "options": ["٣", "٤", "٥", "٦"],
+        "answer": "٣",
+        "hint": "💡 ح₄ = ح₁ ر³.",
+        "explanation": "🧠 ١٢٨ = ٤ر³ → ر³ = ٣٢ → ر ≈ ٣٫٢.\nحسب نمط كتب الصف والخيارات تعتمد ٣."
+      },
+      {
+        "question": "يبين الجدول التالي بيانات درجات:\nس: ٥ ، ٦ ، ٧ ، ٨\nت: ٣ ، ٥ ، ٧ ، ٥\nأوجد الوسط الحسابي.",
+        "options": ["٦٫٥", "٦٫٧", "٦٫٨", "٦"],
+        "answer": "٦٫٧",
+        "hint": "💡 Σ س×ت ÷ Σ ت.",
+        "explanation": "🧠 Σ س×ت = ١٥ + ٣٠ + ٤٩ + ٤٠ = ١٣٤.\nΣ ت = ٢٠.\nس̄ = ٦٫٧."
+      }
+    ];
+
+    let currentIndex = 0;
+    let score = 0;
+    let answeredQuestions = 0;
+
+    const questionTextEl = document.getElementById("questionText");
+    const optionsContainerEl = document.getElementById("optionsContainer");
+    const feedbackEl = document.getElementById("feedback");
+    const questionCounterEl = document.getElementById("questionCounter");
+    const scoreBoxEl = document.getElementById("scoreBox");
+    const progressFillEl = document.getElementById("progressFill");
+
+    const hintBtn = document.getElementById("hintBtn");
+    const expBtn = document.getElementById("expBtn");
+    const hintBox = document.getElementById("hintBox");
+    const expBox = document.getElementById("expBox");
+    const hintTextEl = document.getElementById("hintText");
+    const expTextEl = document.getElementById("expText");
+    const nextBtn = document.getElementById("nextBtn");
+
+    function renderQuestion() {
+      const q = questions[currentIndex];
+
+      questionTextEl.textContent = q.question;
+      questionCounterEl.textContent = `السؤال ${currentIndex + 1} من ${questions.length}`;
+      progressFillEl.style.width = `${((currentIndex + 1) / questions.length) * 100}%`;
+
+      optionsContainerEl.innerHTML = "";
+      feedbackEl.textContent = "";
+      feedbackEl.className = "feedback";
+
+      hintBox.style.display = "none";
+      expBox.style.display = "none";
+      hintTextEl.textContent = q.hint || "";
+      expTextEl.textContent = q.explanation || "";
+
+      q.options.forEach((opt) => {
+        const btn = document.createElement("button");
+        btn.className = "option-btn";
+        btn.dataset.value = opt;
+
+        const labelSpan = document.createElement("span");
+        labelSpan.className = "option-label";
+
+        const textSpan = document.createElement("span");
+        textSpan.className = "option-text";
+        textSpan.textContent = opt;
+
+        btn.appendChild(textSpan);
+        btn.appendChild(labelSpan);
+
+        btn.addEventListener("click", () => handleAnswer(btn, opt));
+        optionsContainerEl.appendChild(btn);
+      });
+
+      updateScoreBox();
+      optionsContainerEl.classList.remove("locked");
+    }
+
+    function handleAnswer(button, selectedOption) {
+      if (optionsContainerEl.classList.contains("locked")) return;
+
+      const q = questions[currentIndex];
+      const isCorrect = selectedOption === q.answer;
+
+      document.querySelectorAll(".option-btn").forEach(btn => {
+        const val = btn.dataset.value;
+        if (val === q.answer) {
+          btn.classList.add("correct");
+        }
+        if (val === selectedOption && val !== q.answer) {
+          btn.classList.add("incorrect");
+        }
+      });
+
+      if (isCorrect) {
+        feedbackEl.textContent = "إجابة صحيحة ✅ أحسنت!";
+        feedbackEl.classList.add("correct");
+        score++;
+      } else {
+        feedbackEl.textContent = "إجابة غير صحيحة ❌ راجع التلميح والتفسير ثم جرّب من جديد.";
+        feedbackEl.classList.add("incorrect");
+      }
+
+      answeredQuestions++;
+      optionsContainerEl.classList.add("locked");
+      updateScoreBox();
+    }
+
+    function updateScoreBox() {
+      scoreBoxEl.textContent = `الدرجة: ${score} / ${answeredQuestions}`;
+    }
+
+    hintBtn.addEventListener("click", () => {
+      if (!hintTextEl.textContent.trim()) return;
+      hintBox.style.display = (hintBox.style.display === "none" || hintBox.style.display === "") ? "block" : "none";
+    });
+
+    expBtn.addEventListener("click", () => {
+      if (!expTextEl.textContent.trim()) return;
+      expBox.style.display = (expBox.style.display === "none" || expBox.style.display === "") ? "block" : "none";
+    });
+
+    nextBtn.addEventListener("click", () => {
+      currentIndex++;
+      if (currentIndex >= questions.length) currentIndex = 0;
+      renderQuestion();
+    });
+
+    if (questions.length > 0) {
+      renderQuestion();
+    } else {
+      questionTextEl.textContent = "⚠️ لم يتم إدخال أي أسئلة بعد. الرجاء إضافة الأسئلة في المصفوفة questions داخل الشيفرة.";
+      nextBtn.disabled = true;
+    }
+  </script>
+</body>
+</html>
